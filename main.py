@@ -1,16 +1,35 @@
-# This is a sample Python script.
+import ctypes   # import the necessary modules
+# Load DLL into memory
 
-# Press Shift+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
+spi_master = ctypes.WinDLL("MCP2210DLL-UMx64.dll", winmode=0)
+spi_master.DllInit(0x04D8,0x00DE)
+
+# Test connexion
+isConnected = spi_master.GetConnectionStatus() # return 0 if not connected !
+
+if isConnected:
+    print("The device is connected.\n")
+else:
+    print("The device is NOT connected.\n")
 
 
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
+spi_master.argtypes = [ctypes.c_char_p, ctypes.c_int]
+spi_master.restype = ctypes.c_int
+spi_master.SetSpiMode = 1
+integer = ctypes.c_int()
+word = ctypes.c_char_p
+data_2 = spi_master.GetSpiMode(integer)
+print(data_2)
 
+libc = ctypes.cdll.LoadLibrary("MCP2210DLL-UMx64.dll")
+print(libc.GetConnectionStatus())
+s = spi_master.GetSerialNumber
+c_s = ctypes.c_wchar_p(str(s))
+print(c_s)
+print(c_s.value)
 
-# Press the green button in the gutter to run the script.
-if __name__ == '__main__':
-    print_hi('PyCharm')
+x = getattr(libc, 'GetSerialNumber')
+print(x)
 
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+spi_master.DllCleanUp()
+
